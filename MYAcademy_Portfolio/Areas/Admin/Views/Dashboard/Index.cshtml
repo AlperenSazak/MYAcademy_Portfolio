@@ -1,139 +1,214 @@
-﻿@{
+﻿﻿@model DashboardViewModel
+@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
-
-    // Dinamik veriler (controller'dan)
-    int total = ViewBag.v1;
-    int unread = ViewBag.v2;
-    int read = ViewBag.v3;
-    int rate = total == 0 ? 0 : read * 100 / total;
-
-    // Statik (UI) veriler
-    var labels = new[] { "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz" };
-    var counts = new[] { 4, 7, 3, 9, 6, 2, 5 };
-    int max = counts.Max();
-    var last = new[] {
-        (Name: "Ayşe Yılmaz",  Subject: "Proje teklifi",      Text: "Merhaba, web siteniz için bir teklif almak istiyorum.", Date: "03 Kas, 14:20", IsRead: false),
-        (Name: "Mehmet Kaya",  Subject: "İş birliği",         Text: "Portfolyonuzu inceledim, birlikte çalışmak isteriz.",   Date: "02 Kas, 10:05", IsRead: false),
-        (Name: "Zeynep Demir", Subject: "Teşekkürler",        Text: "Geçen haftaki görüşme için teşekkür ederim.",            Date: "01 Kas, 18:42", IsRead: true),
-        (Name: "Can Öztürk",   Subject: "Staj başvurusu",     Text: "Ekibinizde staj imkânı olup olmadığını öğrenmek isterim.", Date: "31 Eki, 09:15", IsRead: true)
-    };
+    int maxCategoryCount = Model.CategorySummaries.Any() ? Model.CategorySummaries.Max(x => x.ProjectCount) : 0;
 }
 
-<style>
-    .db { --g: #2f5d4e; --g-soft: #e7efe9; --line: #ebe8e1; --muted: #8a8a85; }
-    .db-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 1.4rem; height: 100%; }
-    .db-title { font-weight: 600; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
-    .db-title small { color: var(--muted); font-weight: 400; }
-    .stat { display: flex; align-items: center; gap: 1rem; }
-    .stat-icon { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 1.4rem; }
-    .stat-val { font-size: 1.8rem; font-weight: 700; line-height: 1; }
-    .stat-lbl { color: var(--muted); font-size: .85rem; margin-top: .3rem; }
-    .c-green { background: var(--g-soft); color: var(--g); }
-    .c-blue  { background: #e6eef8; color: #3b6ea5; }
-    .c-rose  { background: #f9e7e7; color: #b44b4b; }
-    .bars { display: flex; align-items: flex-end; gap: .8rem; height: 190px; }
-    .bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: .4rem; }
-    .bar-fill { width: 100%; max-width: 42px; background: var(--g); border-radius: 8px 8px 4px 4px; opacity: .85; transition: opacity .2s; }
-    .bar:hover .bar-fill { opacity: 1; }
-    .bar span { font-size: .75rem; color: var(--muted); }
-    .bar b { font-size: .8rem; }
-    .donut { width: 150px; height: 150px; border-radius: 50%; margin: .5rem auto 1.2rem; display: grid; place-items: center;
-             background: conic-gradient(var(--g) calc(var(--p) * 1%), var(--g-soft) 0); }
-    .donut div { width: 110px; height: 110px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 1.6rem; font-weight: 700; }
-    .legend { display: flex; justify-content: center; gap: 1.2rem; font-size: .85rem; color: var(--muted); }
-    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: .35rem; }
-    .msg-row { display: flex; align-items: center; gap: .9rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
-    .msg-row:last-child { border-bottom: none; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--g-soft); color: var(--g); display: grid; place-items: center; font-weight: 600; flex-shrink: 0; }
-    .msg-body { flex: 1; min-width: 0; }
-    .msg-body p { margin: 0; color: var(--muted); font-size: .85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .badge-soft { font-size: .72rem; padding: .3rem .6rem; border-radius: 20px; }
-</style>
+<main class="page-content-area">
 
-<div class="db container-fluid py-3">
-
-    <!-- Dinamik istatistik kartları -->
-    <div class="row g-4 mb-4">
-        @{
-            var stats = new[] {
-                (Val: total,  Lbl: "Toplam Mesaj", Icon: "bi-envelope",             Cls: "c-green"),
-                (Val: unread, Lbl: "Okunmamış",    Icon: "bi-envelope-exclamation", Cls: "c-rose"),
-                (Val: read,   Lbl: "Okunmuş",      Icon: "bi-envelope-check",       Cls: "c-blue")
-            };
-        }
-        @foreach (var s in stats)
-        {
-            <div class="col-md-4">
-                <div class="db-card stat">
-                    <div class="stat-icon @s.Cls"><i class="bi @s.Icon"></i></div>
-                    <div>
-                        <div class="stat-val">@s.Val</div>
-                        <div class="stat-lbl">@s.Lbl</div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    <div class="row g-4 mb-4">
-        <!-- Haftalık grafik (statik) -->
-        <div class="col-xl-8">
-            <div class="db-card">
-                <div class="db-title">Son 7 Gün <small>Günlük gelen mesajlar</small></div>
-                <div class="bars">
-                    @for (int i = 0; i < 7; i++)
-                    {
-                        <div class="bar">
-                            <b>@counts[i]</b>
-                            <div class="bar-fill" style="height:@(counts[i] * 100 / max)%"></div>
-                            <span>@labels[i]</span>
-                        </div>
-                    }
-                </div>
-            </div>
+    <div class="content-header-row">
+        <div>
+            <h1 class="page-title">Hoş geldin, Patron 👋</h1>
+            <p class="page-subtitle">Portfolyonun güncel özeti. Tüm veriler veritabanından anlık olarak gelir.</p>
         </div>
-
-        <!-- Okunma oranı (v1 ve v3'ten hesaplanır) -->
-        <div class="col-xl-4">
-            <div class="db-card">
-                <div class="db-title">Okunma Oranı</div>
-                <div class="donut" style="--p:@rate"><div>%@rate</div></div>
-                <div class="legend">
-                    <span><i style="background:var(--g)"></i>Okundu (@read)</span>
-                    <span><i style="background:var(--g-soft)"></i>Okunmadı (@unread)</span>
-                </div>
-            </div>
+        <div class="header-actions">
+            <a href="/" target="_blank" class="btn-pastel-secondary">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span>Siteyi Önizle</span>
+            </a>
         </div>
     </div>
 
-    <!-- Son mesajlar (statik) -->
-    <div class="db-card">
-        <div class="db-title">
-            Son Mesajlar
-            <a asp-area="Admin" asp-controller="Message" asp-action="MessageList" class="small text-decoration-none" style="color:var(--g)">Tümünü gör →</a>
+    <!-- İstatistik kartları -->
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper icon-green"><i class="bi bi-folder2-open"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Toplam Proje</span>
+                <h3 class="stat-value">@Model.TotalProjectCount</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper icon-blue"><i class="bi bi-check2-circle"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Aktif Proje</span>
+                <h3 class="stat-value">@Model.ActiveProjectCount</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper icon-purple"><i class="bi bi-stars"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Yetenek</span>
+                <h3 class="stat-value">@Model.SkillCount</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper icon-beige"><i class="bi bi-briefcase"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Deneyim</span>
+                <h3 class="stat-value">@Model.ExperienceCount</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper icon-green"><i class="bi bi-mortarboard"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Eğitim</span>
+                <h3 class="stat-value">@Model.EducationCount</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon-wrapper icon-blue"><i class="bi bi-inbox"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Toplam Mesaj</span>
+                <h3 class="stat-value">@Model.TotalMessageCount</h3>
+            </div>
+        </div>
+        <a href="/Admin/Message/MessageList?status=unread" class="stat-card text-decoration-none">
+            <div class="stat-icon-wrapper icon-purple"><i class="bi bi-envelope-exclamation"></i></div>
+            <div class="stat-content">
+                <span class="stat-label">Okunmamış Mesaj</span>
+                <h3 class="stat-value">@Model.UnreadMessageCount</h3>
+            </div>
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Son 5 mesaj -->
+        <div class="col-xl-7">
+            <div class="dashboard-panel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Son Mesajlar</h5>
+                    <a href="/Admin/Message/MessageList" class="small">Tümünü gör</a>
+                </div>
+                <table class="custom-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Gönderen</th>
+                            <th>Konu</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.LastMessages.Any())
+                        {
+                            <tr><td colspan="4" class="empty-state">Henüz mesaj yok.</td></tr>
+                        }
+                        @foreach (var item in Model.LastMessages)
+                        {
+                            <tr class="@(item.IsRead ? "" : "row-unread")">
+                                <td>@item.SenderName</td>
+                                <td><a href="/Admin/Message/MessageList?search=@Uri.EscapeDataString(item.Subject)" class="text-decoration-none">@item.Subject</a></td>
+                                <td><small>@item.SendDate.ToString("dd MMM HH:mm")</small></td>
+                                <td><span class="status-pill @(item.IsRead ? "status-active" : "status-passive")">@(item.IsRead ? "Okundu" : "Okunmadı")</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        @foreach (var m in last)
-        {
-            <div class="msg-row">
-                <div class="avatar">@m.Name.Substring(0, 1)</div>
-                <div class="msg-body">
-                    <strong>@m.Name</strong> · <span class="small">@m.Subject</span>
-                    <p>@m.Text</p>
-                </div>
-                <small class="text-muted d-none d-md-block">@m.Date</small>
-                @if (m.IsRead)
+        <!-- Kategori özeti (GroupBy) -->
+        <div class="col-xl-5">
+            <div class="dashboard-panel">
+                <h5>Kategorilere Göre Projeler</h5>
+                @if (!Model.CategorySummaries.Any())
                 {
-                    <span class="badge-soft c-blue">Okundu</span>
+                    <div class="empty-state">Henüz kategori yok.</div>
                 }
                 else
                 {
-                    <span class="badge-soft c-rose">Yeni</span>
+                    <canvas id="categoryChart" height="180"></canvas>
+                    <table class="custom-admin-table mt-3">
+                        <tbody>
+                            @foreach (var item in Model.CategorySummaries)
+                            {
+                                var percent = maxCategoryCount == 0 ? 0 : item.ProjectCount * 100 / maxCategoryCount;
+                                <tr>
+                                    <td>@item.CategoryName</td>
+                                    <td style="width: 45%;"><div class="level-bar"><span style="width: @percent%;"></span></div></td>
+                                    <td style="text-align: right;"><span class="order-badge">@item.ProjectCount</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 }
             </div>
-        }
+        </div>
     </div>
-</div>
 
+    <div class="row g-4">
+        <!-- Son eklenen 3 proje -->
+        <div class="col-xl-7">
+            <div class="dashboard-panel">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Son Eklenen Projeler</h5>
+                    <a href="/Admin/Project/ProjectList" class="small">Tümünü gör</a>
+                </div>
+                <table class="custom-admin-table">
+                    <tbody>
+                        @if (!Model.LastProjects.Any())
+                        {
+                            <tr><td class="empty-state">Henüz proje yok.</td></tr>
+                        }
+                        @foreach (var item in Model.LastProjects)
+                        {
+                            <tr>
+                                <td>
+                                    <a href="/Admin/Project/UpdateProject/@item.ProjectId" class="exp-title-text text-decoration-none">@item.ProjectTitle</a>
+                                    <small class="text-muted d-block">@item.CreatedDate.ToString("dd MMM yyyy")</small>
+                                </td>
+                                <td><span class="work-type-badge">@(item.Category?.CategoryName ?? "-")</span></td>
+                                <td style="text-align: right;"><span class="status-pill @(item.IsActive ? "status-active" : "status-passive")">@(item.IsActive ? "Aktif" : "Pasif")</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
+        <!-- Hızlı erişim -->
+        <div class="col-xl-5">
+            <div class="dashboard-panel">
+                <h5>Hızlı Erişim</h5>
+                <div class="d-grid gap-2">
+                    <a href="/Admin/Project/CreateProject" class="quick-link-card"><i class="bi bi-plus-circle"></i> Yeni Proje Ekle</a>
+                    <a href="/Admin/Message/MessageList?status=unread" class="quick-link-card"><i class="bi bi-envelope-open"></i> Okunmamış Mesajları Gör (@Model.UnreadMessageCount)</a>
+                    <a href="/Admin/Skill/CreateSkillItem" class="quick-link-card"><i class="bi bi-stars"></i> Yeni Yetenek Ekle</a>
+                    <a href="/Admin/HeroSection/UpdateHeroSection" class="quick-link-card"><i class="bi bi-house"></i> Ana Sayfa Bilgilerini Düzenle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    @if (Model.CategorySummaries.Any())
+    {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+        <script>
+            (function () {
+                const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategorySummaries.Select(x => x.CategoryName)));
+                const values = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategorySummaries.Select(x => x.ProjectCount)));
+
+                new Chart(document.getElementById('categoryChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Proje sayısı',
+                            data: values,
+                            backgroundColor: '#9BB7A2',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                    }
+                });
+            })();
+        </script>
+    }
+}

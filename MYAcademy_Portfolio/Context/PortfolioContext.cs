@@ -18,5 +18,8 @@ namespace MYAcademy_Portfolio.Context
         public DbSet<SkillItem> SkillItems { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<About> Educations { get; set; }        
+        public DbSet<About> Abouts { get; set; }
+        public DbSet<SocialMedia> SocialMedias { get; set; }
     }
 }
