@@ -1,36 +1,44 @@
-﻿ <!-- 12. Footer -->
-    <footer class="site-footer">
-        <div class="container">
-            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between pb-4 border-bottom gap-3">
-                <div>
-                    <a class="navbar-brand-custom" href="#home">
-                        <span>Alperen Sazak</span>
-                    </a>
-                    <p class="text-muted small mb-0 mt-1">Kod, yaratıcılık ve sürekli öğrenme.</p>
-                </div>
-
-                <!-- Quick Links -->
-                <div class="d-flex gap-3">
-                    <a href="#home" class="text-decoration-none text-muted small fw-medium">Ana Sayfa</a>
-                    <a href="#about" class="text-decoration-none text-muted small fw-medium">Hakkımda</a>
-                    <a href="#projects" class="text-decoration-none text-muted small fw-medium">Projelerim</a>
-                    <a href="#contact" class="text-decoration-none text-muted small fw-medium">İletişim</a>
-                </div>
-
-                <button class="back-to-top-btn" id="backToTop" title="Yukarı Çık">
-                    <i class="bi bi-arrow-up"></i>
-                </button>
+﻿@model List<MYAcademy_Portfolio.Entities.SocialMedia>
+@{
+    var brandName = string.IsNullOrWhiteSpace(ViewBag.Name as string) ? "Alperen Sazak" : ViewBag.Name as string;
+}
+<footer class="site-footer">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between pb-4 border-bottom gap-3">
+            <div>
+                <a class="navbar-brand-custom" href="#home">
+                    <span>@brandName</span>
+                </a>
+                <p class="text-muted small mb-0 mt-1">Kod, yaratıcılık ve sürekli öğrenme.</p>
             </div>
 
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 gap-2">
-                <div class="text-muted small">
-                    © 2026 Alperen Sazak. Tüm hakları saklıdır.
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="https://github.com/AlperenSazak" target="_blank" rel="noopener noreferrer" class="text-muted small text-decoration-none me-2"><i class="bi bi-github"></i> GitHub</a>
-                    <a href="https://www.linkedin.com/in/alperen-sazak" target="_blank" rel="noopener noreferrer" class="text-muted small text-decoration-none me-2"><i class="bi bi-linkedin"></i> LinkedIn</a>
-                    <a href="https://www.instagram.com/alperenszko" target="_blank" rel="noopener noreferrer" class="text-muted small text-decoration-none"><i class="bi bi-instagram"></i> Instagram</a>
-                </div>
+            <div class="d-flex gap-3">
+                <a href="#home" class="text-decoration-none text-muted small fw-medium">Ana Sayfa</a>
+                <a href="#about" class="text-decoration-none text-muted small fw-medium">Hakkımda</a>
+                <a href="#projects" class="text-decoration-none text-muted small fw-medium">Projelerim</a>
+                <a href="#contact" class="text-decoration-none text-muted small fw-medium">İletişim</a>
+            </div>
+
+            <button class="back-to-top-btn" id="backToTop" title="Yukarı Çık">
+                <i class="bi bi-arrow-up"></i>
+            </button>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 gap-2">
+            <div class="text-muted small">
+                © @DateTime.Now.Year @brandName. Tüm hakları saklıdır.
+            </div>
+            <div class="d-flex gap-2">
+                @if (Model != null)
+                {
+                    foreach (var s in Model)
+                    {
+                        <a href="@s.Url" target="_blank" rel="noopener noreferrer" class="text-muted small text-decoration-none me-2">
+                            <i class="@(string.IsNullOrWhiteSpace(s.IconClass) ? "bi bi-link-45deg" : s.IconClass)"></i> @s.Platform
+                        </a>
+                    }
+                }
             </div>
         </div>
-    </footer>
+    </div>
+</footer>

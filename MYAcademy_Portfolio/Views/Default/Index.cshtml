@@ -54,12 +54,14 @@
     <script>
             // 1. Typewriter Animation for Hero Section
             (function initTypewriter() {
-              const phrases = [
-                "Yazılım Geliştiricisi",
-                "Teknoloji İçerik Üreticisi",
-                "Yapay Zeka Meraklısı",
-                "Yazılım Mimarı"
-              ];
+              const phrases = (window.__heroPhrases && window.__heroPhrases.length)
+                ? window.__heroPhrases
+                : [
+                    "Yazılım Geliştiricisi",
+                    "Teknoloji İçerik Üreticisi",
+                    "Yapay Zeka Meraklısı",
+                    "Yazılım Mimarı"
+                  ];
               const targetElement = document.getElementById("typewriterText");
               if (!targetElement) return;
 

@@ -13,7 +13,8 @@ namespace MYAcademy_Portfolio.ViewComponents.DefaultWiewComponents
 
         public IViewComponentResult Invoke()
         {
-            ViewBag.Name = _context.HeroSections.Select(x => x.Greeting).FirstOrDefault();
+            var hero = _context.HeroSections.FirstOrDefault();
+            ViewBag.Name = hero?.Greeting ?? "Alperen Sazak";
             var values = _context.SocialMedias.OrderBy(x => x.SocialMediaId).ToList();
             return View(values);
         }
