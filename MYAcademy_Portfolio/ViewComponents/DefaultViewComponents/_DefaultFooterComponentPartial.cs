@@ -3,16 +3,18 @@ using MYAcademy_Portfolio.Context;
 
 namespace MYAcademy_Portfolio.ViewComponents.DefaultWiewComponents
 {
-    public class _DefaultExperienceComponentPartial : ViewComponent
+    public class _DefaultFooterComponentPartial : ViewComponent
     {
         private readonly PortfolioContext _context;
-        public _DefaultExperienceComponentPartial(PortfolioContext context)
+        public _DefaultFooterComponentPartial(PortfolioContext context)
         {
             _context = context;
         }
+
         public IViewComponentResult Invoke()
         {
-            var values = _context.Experiences.ToList();
+            ViewBag.Name = _context.HeroSections.Select(x => x.Greeting).FirstOrDefault();
+            var values = _context.SocialMedias.OrderBy(x => x.SocialMediaId).ToList();
             return View(values);
         }
     }
