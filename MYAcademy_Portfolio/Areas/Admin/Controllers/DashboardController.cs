@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MYAcademy_Portfolio.Context;
+using MYAcademy_Portfolio.Models;
 
 namespace MYAcademy_Portfolio.Areas.Admin.Controllers
 {

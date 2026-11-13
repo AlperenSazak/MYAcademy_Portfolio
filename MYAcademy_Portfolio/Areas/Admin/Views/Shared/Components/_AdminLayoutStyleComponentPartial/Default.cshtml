@@ -1162,4 +1162,34 @@
         justify-content: space-between;
       }
     }
+
+        /* Dashboard kartları yan yana */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.1rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .dashboard-grid .stat-card {
+      min-width: 0;
+      color: inherit;
+    }
+
+    .dashboard-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.3rem 1.5rem;
+      box-shadow: var(--shadow-subtle);
+      height: 100%;
+    }
+
+    @@media (max-width: 1199.98px) {
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @@media (max-width: 575.98px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
   </style>

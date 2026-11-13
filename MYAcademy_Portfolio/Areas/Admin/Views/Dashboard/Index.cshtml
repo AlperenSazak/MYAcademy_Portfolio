@@ -1,4 +1,5 @@
-﻿﻿@model DashboardViewModel
+@model DashboardViewModel
+
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
@@ -13,14 +14,13 @@
             <p class="page-subtitle">Portfolyonun güncel özeti. Tüm veriler veritabanından anlık olarak gelir.</p>
         </div>
         <div class="header-actions">
-            <a href="/" target="_blank" class="btn-pastel-secondary">
+            <a asp-area="" asp-controller="Default" asp-action="Index" target="_blank" rel="noopener" class="btn-pastel-secondary">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span>Siteyi Önizle</span>
             </a>
         </div>
     </div>
 
-    <!-- İstatistik kartları -->
     <div class="dashboard-grid">
         <div class="stat-card">
             <div class="stat-icon-wrapper icon-green"><i class="bi bi-folder2-open"></i></div>
@@ -168,7 +168,6 @@
             </div>
         </div>
 
-        <!-- Hızlı erişim -->
         <div class="col-xl-5">
             <div class="dashboard-panel">
                 <h5>Hızlı Erişim</h5>

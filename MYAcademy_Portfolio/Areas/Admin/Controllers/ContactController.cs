@@ -23,7 +23,7 @@ namespace MYAcademy_Portfolio.Areas.Admin.Controllers
         public IActionResult CreateContact()
         {
             ViewBag.FormTitle = "Yeni İletişim Bilgisi";
-            return View("ContactForm", new Contact());
+            return View("CreateContact", new Contact());
         }
 
         [HttpPost]
@@ -32,7 +32,7 @@ namespace MYAcademy_Portfolio.Areas.Admin.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.FormTitle = "Yeni İletişim Bilgisi";
-                return View("ContactForm", contact);
+                return View("CreateContact", contact);
             }
 
             _context.Contacts.Add(contact);
@@ -51,7 +51,7 @@ namespace MYAcademy_Portfolio.Areas.Admin.Controllers
             }
 
             ViewBag.FormTitle = "İletişim Bilgisini Güncelle";
-            return View("ContactForm", value);
+            return View("CreateContact", value);
         }
 
         [HttpPost]
@@ -60,7 +60,7 @@ namespace MYAcademy_Portfolio.Areas.Admin.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.FormTitle = "İletişim Bilgisini Güncelle";
-                return View("ContactForm", contact);
+                return View("CreateContact", contact);
             }
 
             _context.Contacts.Update(contact);

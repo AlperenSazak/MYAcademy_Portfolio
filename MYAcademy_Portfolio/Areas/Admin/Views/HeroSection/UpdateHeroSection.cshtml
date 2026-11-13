@@ -11,8 +11,8 @@
             <h1 class="page-title">Ana Sayfa Alanı</h1>
             <p class="page-subtitle">Siteye ilk girildiğinde görünen öne çıkan bilgiler.</p>
         </div>
-        <div class="header-actions">
-            <a href="/#home" target="_blank" class="btn-pastel-secondary">
+        <div class="header-actions">            
+            <a asp-area="" asp-controller="Default" asp-action="Index" asp-fragment="home" target="_blank" rel="noopener" class="btn-pastel-secondary">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span>Sitede Gör</span>
             </a>
@@ -30,7 +30,7 @@
 
                     <div class="form-group-custom">
                         <label asp-for="Greeting" class="form-label-custom">Ad Soyad <span class="required-star">*</span></label>
-                        <input asp-for="Greeting" class="form-control-custom" placeholder="Ör: Yiğit Babacan" />
+                        <input asp-for="Greeting" class="form-control-custom" placeholder="Ör: Alperen Sazak" />
                         <span asp-validation-for="Greeting" class="field-error"></span>
                     </div>
 

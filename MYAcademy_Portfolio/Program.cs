@@ -1,10 +1,12 @@
 using MYAcademy_Portfolio.Context;
+using MYAcademy_Portfolio.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<PortfolioContext>();
+builder.Services.AddScoped<ImageUploadService>();
 
 var app = builder.Build();
 

@@ -2,161 +2,159 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MYAcademy_Portfolio.Context;
 using MYAcademy_Portfolio.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace MYAcademy_Portfolio.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class SkillController : Controller
     {
-        [Area("Admin")]
-        public class SkillController : Controller
+        private readonly PortfolioContext _context;
+        public SkillController(PortfolioContext context)
         {
-            private readonly PortfolioContext _context;
-            public SkillController(PortfolioContext context)
-            {
-                _context = context;
-            }
+            _context = context;
+        }
 
-            public IActionResult SkillList()
-            {
-                var values = _context.Skills
-                    .Include(x => x.SkillItems)
-                    .OrderBy(x => x.SkillId)
-                    .ToList();
-                return View(values);
-            }
+        public IActionResult SkillList()
+        {
+            var values = _context.Skills
+                .Include(x => x.SkillItems)
+                .OrderBy(x => x.SkillId)
+                .ToList();
+            return View(values);
+        }
 
-            [HttpGet]
-            public IActionResult CreateSkill()
+        [HttpGet]
+        public IActionResult CreateSkill()
+        {
+            ViewBag.FormTitle = "Yeni Yetenek Grubu";
+            return View("SkillForm", new Skill());
+        }
+
+        [HttpPost]
+        public IActionResult CreateSkill(Skill skill)
+        {
+            if (!ModelState.IsValid)
             {
                 ViewBag.FormTitle = "Yeni Yetenek Grubu";
-                return View("SkillForm", new Skill());
+                return View("SkillForm", skill);
             }
 
-            [HttpPost]
-            public IActionResult CreateSkill(Skill skill)
-            {
-                if (!ModelState.IsValid)
-                {
-                    ViewBag.FormTitle = "Yeni Yetenek Grubu";
-                    return View("SkillForm", skill);
-                }
+            _context.Skills.Add(skill);
+            _context.SaveChanges();
+            TempData["Success"] = "Yetenek grubu eklendi.";
+            return RedirectToAction("SkillList");
+        }
 
-                _context.Skills.Add(skill);
-                _context.SaveChanges();
-                TempData["Success"] = "Yetenek grubu eklendi.";
+        [HttpGet]
+        public IActionResult UpdateSkill(int id)
+        {
+            var value = _context.Skills.Find(id);
+            if (value == null)
+            {
                 return RedirectToAction("SkillList");
             }
 
-            [HttpGet]
-            public IActionResult UpdateSkill(int id)
-            {
-                var value = _context.Skills.Find(id);
-                if (value == null)
-                {
-                    return RedirectToAction("SkillList");
-                }
+            ViewBag.FormTitle = "Yetenek Grubunu Güncelle";
+            return View("SkillForm", value);
+        }
 
+        [HttpPost]
+        public IActionResult UpdateSkill(Skill skill)
+        {
+            if (!ModelState.IsValid)
+            {
                 ViewBag.FormTitle = "Yetenek Grubunu Güncelle";
-                return View("SkillForm", value);
+                return View("SkillForm", skill);
             }
 
-            [HttpPost]
-            public IActionResult UpdateSkill(Skill skill)
-            {
-                if (!ModelState.IsValid)
-                {
-                    ViewBag.FormTitle = "Yetenek Grubunu Güncelle";
-                    return View("SkillForm", skill);
-                }
+            _context.Skills.Update(skill);
+            _context.SaveChanges();
+            TempData["Success"] = "Yetenek grubu güncellendi.";
+            return RedirectToAction("SkillList");
+        }
 
-                _context.Skills.Update(skill);
+        public IActionResult DeleteSkill(int id)
+        {
+            var value = _context.Skills.Find(id);
+            if (value != null)
+            {
+                _context.Skills.Remove(value);
                 _context.SaveChanges();
-                TempData["Success"] = "Yetenek grubu güncellendi.";
-                return RedirectToAction("SkillList");
+                TempData["Success"] = "Yetenek grubu ve bağlı yetenekleri silindi.";
             }
+            return RedirectToAction("SkillList");
+        }
 
-            public IActionResult DeleteSkill(int id)
-            {
-                var value = _context.Skills.Find(id);
-                if (value != null)
-                {
-                    _context.Skills.Remove(value);
-                    _context.SaveChanges();
-                    TempData["Success"] = "Yetenek grubu ve bağlı yetenekleri silindi.";
-                }
-                return RedirectToAction("SkillList");
-            }
+        [HttpGet]
+        public IActionResult CreateSkillItem(int? skillId)
+        {
+            LoadSkillDropdown(skillId);
+            ViewBag.FormTitle = "Yeni Yetenek";
+            return View("SkillItemForm", new SkillItem { SkillId = skillId ?? 0, Level = 50 });
+        }
 
-            [HttpGet]
-            public IActionResult CreateSkillItem(int? skillId)
+        [HttpPost]
+        public IActionResult CreateSkillItem(SkillItem skillItem)
+        {
+            if (!ModelState.IsValid)
             {
-                LoadSkillDropdown(skillId);
+                LoadSkillDropdown(skillItem.SkillId);
                 ViewBag.FormTitle = "Yeni Yetenek";
-                return View("SkillItemForm", new SkillItem { SkillId = skillId ?? 0, Level = 50 });
+                return View("SkillItemForm", skillItem);
             }
 
-            [HttpPost]
-            public IActionResult CreateSkillItem(SkillItem skillItem)
-            {
-                if (!ModelState.IsValid)
-                {
-                    LoadSkillDropdown(skillItem.SkillId);
-                    ViewBag.FormTitle = "Yeni Yetenek";
-                    return View("SkillItemForm", skillItem);
-                }
+            _context.SkillItems.Add(skillItem);
+            _context.SaveChanges();
+            TempData["Success"] = "Yetenek eklendi.";
+            return RedirectToAction("SkillList");
+        }
 
-                _context.SkillItems.Add(skillItem);
-                _context.SaveChanges();
-                TempData["Success"] = "Yetenek eklendi.";
+        [HttpGet]
+        public IActionResult UpdateSkillItem(int id)
+        {
+            var value = _context.SkillItems.Find(id);
+            if (value == null)
+            {
                 return RedirectToAction("SkillList");
             }
 
-            [HttpGet]
-            public IActionResult UpdateSkillItem(int id)
-            {
-                var value = _context.SkillItems.Find(id);
-                if (value == null)
-                {
-                    return RedirectToAction("SkillList");
-                }
+            LoadSkillDropdown(value.SkillId);
+            ViewBag.FormTitle = "Yeteneği Güncelle";
+            return View("SkillItemForm", value);
+        }
 
-                LoadSkillDropdown(value.SkillId);
+        [HttpPost]
+        public IActionResult UpdateSkillItem(SkillItem skillItem)
+        {
+            if (!ModelState.IsValid)
+            {
+                LoadSkillDropdown(skillItem.SkillId);
                 ViewBag.FormTitle = "Yeteneği Güncelle";
-                return View("SkillItemForm", value);
+                return View("SkillItemForm", skillItem);
             }
 
-            [HttpPost]
-            public IActionResult UpdateSkillItem(SkillItem skillItem)
-            {
-                if (!ModelState.IsValid)
-                {
-                    LoadSkillDropdown(skillItem.SkillId);
-                    ViewBag.FormTitle = "Yeteneği Güncelle";
-                    return View("SkillItemForm", skillItem);
-                }
+            _context.SkillItems.Update(skillItem);
+            _context.SaveChanges();
+            TempData["Success"] = "Yetenek güncellendi.";
+            return RedirectToAction("SkillList");
+        }
 
-                _context.SkillItems.Update(skillItem);
+        public IActionResult DeleteSkillItem(int id)
+        {
+            var value = _context.SkillItems.Find(id);
+            if (value != null)
+            {
+                _context.SkillItems.Remove(value);
                 _context.SaveChanges();
-                TempData["Success"] = "Yetenek güncellendi.";
-                return RedirectToAction("SkillList");
+                TempData["Success"] = "Yetenek silindi.";
             }
+            return RedirectToAction("SkillList");
+        }
 
-            public IActionResult DeleteSkillItem(int id)
-            {
-                var value = _context.SkillItems.Find(id);
-                if (value != null)
-                {
-                    _context.SkillItems.Remove(value);
-                    _context.SaveChanges();
-                    TempData["Success"] = "Yetenek silindi.";
-                }
-                return RedirectToAction("SkillList");
-            }
-
-            private void LoadSkillDropdown(int? selectedId)
-            {
-                ViewBag.Skills = new SelectList(_context.Skills.OrderBy(x => x.Title).ToList(), "SkillId", "Title", selectedId);
-            }
+        private void LoadSkillDropdown(int? selectedId)
+        {
+            ViewBag.Skills = new SelectList(_context.Skills.OrderBy(x => x.Title).ToList(), "SkillId", "Title", selectedId);
         }
     }
 }

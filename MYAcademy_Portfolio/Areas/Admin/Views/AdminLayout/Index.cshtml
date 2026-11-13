@@ -27,5 +27,7 @@
     <!-- Vanilla JavaScript Interactions -->
     @await Component.InvokeAsync("_AdminLayoutScriptComponentPartial")
 
+    @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
